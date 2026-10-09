@@ -1,0 +1,58 @@
+<view class="preEdit page-shell">
+  <page-header title="规格详情" back="{{true}}" light="{{true}}" />
+
+  <view class="shoot-card surface">
+    <text class="shoot-title">拍摄指南</text>
+    <view class="shoot-content">
+      <image class="shoot-photo" src="/images/home/hero-portrait.jpg" mode="aspectFill"></image>
+      <view class="shoot-tips">
+        <view class="shoot-tip"><text class="tip-number">1</text><text>在纯色墙前拍摄，光线充足均匀</text></view>
+        <view class="shoot-tip"><text class="tip-number">2</text><text>头部居中，正对镜头</text></view>
+        <view class="shoot-tip"><text class="tip-number">3</text><text>露出眉毛和耳朵，面部无遮挡</text></view>
+        <view class="shoot-tip"><text class="tip-number">4</text><text>优先使用后置摄像头</text></view>
+      </view>
+    </view>
+  </view>
+
+  <view class="detail-card surface" bindtap="warm">
+    <view class="card-title-row">
+      <text class="card-title">{{detail.name}}</text>
+    </view>
+    <view class="spec-grid">
+      <view class="spec-item">
+        <text class="spec-label">冲印尺寸</text>
+        <text class="spec-value">{{detail.widthMm}} × {{detail.heightMm}} mm</text>
+      </view>
+      <view class="spec-item">
+        <text class="spec-label">像素尺寸</text>
+        <text class="spec-value">{{detail.widthPx}} × {{detail.heightPx}} px</text>
+      </view>
+      <view class="spec-item">
+        <text class="spec-label">分辨率</text>
+        <text class="spec-value">{{detail.dpi}} DPI</text>
+      </view>
+    </view>
+    <view class="color-row">
+      <text class="spec-label">背景颜色</text>
+      <view class="colorPick">
+        <view class="circle" style="background: #fff; border:1px solid #ddd;"></view>
+        <view class="circle" style="background: #438edb;"></view>
+        <view class="circle" style="background: #00bff3;"></view>
+        <view class="circle" style="background: #ff0000;"></view>
+        <view class="circle rainbow"></view>
+      </view>
+    </view>
+    <view class="beauty-switch" wx:if="{{beautySwitch==1}}" catchtap="noop">
+      <view>
+        <text class="spec-label">美颜</text>
+        <text class="switch-desc">自然修饰，保留真实感</text>
+      </view>
+      <switch checked="{{isBeautyOn==1}}" bindchange="onBeautySwitch" color="#3d68ed" style="transform:scale(0.82)" />
+    </view>
+  </view>
+
+  <view class="bottom">
+    <view bindtap="chooseImage" class="secondary-btn">相册选择</view>
+    <view bindtap="chooseCamera" class="primary-btn">相机拍照</view>
+  </view>
+</view>

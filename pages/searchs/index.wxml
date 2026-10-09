@@ -1,0 +1,36 @@
+<view class="search-page page-shell">
+  <page-header title="搜索规格" back="{{true}}" light="{{true}}" />
+
+  <view class="search-card">
+    <van-icon name="search" size="38rpx" color="#8A8E96" />
+    <input value="{{value}}" bindinput="onChange" bindconfirm="searchData" placeholder="搜索规格名称、尺寸" placeholder-class="search-placeholder" confirm-type="search" focus />
+    <view wx:if="{{value}}" class="search-clear" bindtap="onChange"><van-icon name="clear" size="32rpx" color="#B7BAC1" /></view>
+  </view>
+
+  <scroll-view class="container" scroll-y bindscrolltolower="moredata" bindscroll="onPageScroll" lower-threshold="160" scroll-top="{{scrollTop}}" scroll-with-animation enhanced show-scrollbar="{{false}}">
+    <view class="grid-container">
+      <view class="grid-item" wx:for="{{photoSizeList}}" wx:key="id" data-index="{{index}}" bindtap="goNextPage">
+        <view class="grid-content">
+          <view class="title">{{item.name}}</view>
+          <view class="description"><text>{{item.widthMm}} × {{item.heightMm}} mm</text><text>{{item.widthPx}} × {{item.heightPx}} px</text></view>
+        </view>
+        <view class="arrow"><van-icon name="arrow" size="28rpx" color="#B7BAC1" /></view>
+      </view>
+    </view>
+
+    <view class="empty-state" wx:if="{{!loading && !photoSizeList.length}}">
+      <view class="empty-icon"><van-icon name="search" size="96rpx" color="#B8C6E8" /></view>
+      <text class="empty-title">{{value ? '没有找到相关规格' : '你想制作什么尺寸？'}}</text>
+      <text class="empty-desc">{{value ? '换一个名称或尺寸试试' : '输入名称，查找你需要的证件照规格'}}</text>
+    </view>
+
+    <view class="list-status" wx:if="{{loading || photoSizeList.length}}">
+      <text wx:if="{{loading}}">{{photoSizeList.length ? '正在加载更多...' : '加载中...'}}</text>
+      <text wx:elif="{{hasMore}}">上拉加载更多</text>
+    </view>
+  </scroll-view>
+
+  <view class="scroll-to-top" wx:if="{{showBackTop}}" bindtap="scrollToTop">
+    <van-icon name="arrow-up" size="36rpx" color="#3D68ED" />
+  </view>
+</view>

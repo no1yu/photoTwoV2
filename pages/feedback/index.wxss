@@ -1,0 +1,200 @@
+.feedback-page {
+  min-height: 100vh;
+  padding-bottom: calc(160rpx + env(safe-area-inset-bottom));
+}
+
+.feedback-content {
+  padding: 28rpx 28rpx 32rpx;
+}
+
+.feedback-intro {
+  padding: 0 0 24rpx;
+  color: #30343b;
+}
+
+.intro-desc {
+  display: block;
+  margin-top: 0;
+  color: #8a8e96;
+  font-size: 26rpx;
+  line-height: 1.6;
+}
+
+.form-card {
+  overflow: hidden;
+  padding: 0 28rpx;
+  border-radius: 20rpx;
+  background: #fff;
+}
+
+.form-section {
+  padding: 30rpx 0;
+  border-bottom: 1rpx solid #EDF1F7;
+}
+
+.contact-section {
+  border-bottom: none;
+}
+
+.section-title {
+  color: #30343b;
+  font-size: 28rpx;
+  font-weight: 400;
+  line-height: 1.5;
+}
+
+.section-head {
+  display: flex;
+  align-items: center;
+  gap: 16rpx;
+}
+
+.section-note {
+  color: #8a8e96;
+  font-size: 24rpx;
+}
+
+.type-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12rpx;
+  margin-top: 22rpx;
+}
+
+.type-item {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 64rpx;
+  border-radius: 32rpx;
+  background: #f5f6f8;
+  color: #8a8e96;
+  font-size: 26rpx;
+}
+
+.type-item.active {
+  background: #3D68ED;
+  color: #fff;
+}
+
+.textarea-box {
+  position: relative;
+  margin-top: 22rpx;
+  padding: 0 0 40rpx;
+  border: none;
+  border-radius: 0;
+  background: transparent;
+}
+
+.input-placeholder {
+  color: #a5a8ae;
+}
+
+.textarea-box textarea {
+  width: 100%;
+  height: 200rpx;
+  padding: 0;
+  border: none;
+  background: transparent;
+  color: #30343b;
+  font-size: 28rpx;
+  line-height: 1.6;
+}
+
+.word-count {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  color: #a5a8ae;
+  font-size: 24rpx;
+}
+
+.image-area {
+  margin-top: 22rpx;
+}
+
+.image-item,
+.image-add {
+  position: relative;
+  width: 144rpx;
+  height: 144rpx;
+  border-radius: 12rpx;
+  border: none;
+  background: #f5f6f8;
+  color: #8a8e96;
+}
+
+.image-item image {
+  width: 100%;
+  height: 100%;
+  border-radius: 12rpx;
+}
+
+.image-delete {
+  position: absolute;
+  top: -20rpx;
+  right: -20rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 80rpx;
+  height: 80rpx;
+}
+
+.image-delete-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 38rpx;
+  height: 38rpx;
+  border: 3rpx solid #fff;
+  border-radius: 50%;
+  background: #3D68ED;
+}
+
+.image-add {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12rpx;
+  border: none;
+  background: #f5f6f8;
+  color: #8a8e96;
+  font-size: 24rpx;
+}
+
+.contact-section input {
+  width: 100%;
+  height: 88rpx;
+  margin-top: 12rpx;
+  color: #30343b;
+  font-size: 28rpx;
+}
+
+.submit-bar {
+  position: fixed;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  z-index: 20;
+  padding: 20rpx 28rpx calc(20rpx + env(safe-area-inset-bottom));
+  border-top: 1rpx solid #EDF1F7;
+  background: #fff;
+}
+
+.submit-button {
+  width: 100%;
+  height: 88rpx;
+  margin: 0;
+  border-radius: 44rpx;
+  background: #3D68ED;
+  color: #fff;
+  font-size: 30rpx;
+  line-height: 88rpx;
+  font-weight: 400;
+}
+
+.submit-button:active {
+  opacity: 0.82;
+}

@@ -1,0 +1,35 @@
+<view class="camera">
+  <view class="camera-header"><page-header title="拍摄证件照" back="{{true}}" /></view>
+	<camera wx:if="{{!photoSrc && cameraVisible}}" device-position="{{cameraPosition}}" flash="off" binderror="error" style="width: 100%; height: 100%;"></camera>
+	<view wx:else class="contain-photo">
+		<image src="{{photoSrc}}" mode="aspectFit"></image>
+	</view>
+	<view wx:if="{{!cameraImg}}" class="person">
+		<image mode="scaleToFill" src="./images/person.png"></image>
+	</view>
+	<view wx:if="{{cameraImg}}" class="confirm-actions">
+		<view class="iconfont icon_back" bindtap="goBackPhoto">
+			<image src="./images/back.png" style="width:100%; height:100%"></image>
+			<text class="control-label">重拍</text>
+		</view>
+		<view class="iconfont icon_confirm" bindtap="goEditPhoto">
+			<image src="./images/go.png" style="width:100%; height:100%"></image>
+			<text class="control-label">{{submitting ? '制作中' : '使用照片'}}</text>
+		</view>
+	</view>
+	<view wx:else>
+		<view class="iconfont icon_back" bindtap="goPreEdit">
+			<image src="./images/back.png" style="width:100%; height:100%"></image>
+			<text class="control-label">返回</text>
+		</view>
+		<view class="iconfont icon_cameraC" bindtap="photo">
+			<image src="./images/camera.png" style="width:100%; height:100%"></image>
+			<text class="control-label">拍照</text>
+		</view>
+		<view class="iconfont icon_cameraT" bindtap="reverseCamera">
+			<image src="./images/reverse.png" style="width:100%; height:100%"></image>
+			<text class="control-label">切换镜头</text>
+		</view>
+	</view>
+
+</view>

@@ -1,0 +1,34 @@
+<view class="works page-shell">
+  <page-header title="我的作品" back="{{true}}" light="{{true}}" />
+  <view class="works-content">
+    <view class="works-tip"><van-icon name="info-o" size="30rpx" /><text>仅记录下载过的，数据仅保留7天，请及时保存下载</text></view>
+
+    <view class="photo-list" wx:if="{{workList.length}}">
+      <view class="photo-card" wx:for="{{workList}}" wx:key="id">
+        <view class="photo-main">
+          <view class="photo-preview">
+            <image src="{{item.nimg}}" data-url="{{item.nimg}}" bindtap="preView" mode="aspectFit"></image>
+          </view>
+          <view class="photo-info">
+            <view class="photo-name">{{item.name}}</view>
+            <view class="photo-size">{{item.size}} px</view>
+            <view class="photo-time">{{item.createTime}}</view>
+          </view>
+        </view>
+        <view class="photo-actions">
+          <button class="delete-btn" data-id="{{item.id}}" bindtap="remove">删除</button>
+          <button class="download-btn" data-url="{{item.nimg}}" bindtap="savePicUrlAndImg">下载</button>
+        </view>
+      </view>
+    </view>
+
+    <view class="loading-state" wx:elif="{{loading}}">加载中...</view>
+    <view class="empty-state" wx:else>
+      <view class="empty-icon"><van-icon name="photo-o" size="112rpx" color="#A7BCEE" /></view>
+      <text class="empty-title">暂无作品</text>
+      <text class="empty-desc">完成下载的照片会出现在这里</text>
+    </view>
+    <view class="list-end" wx:if="{{workList.length && loading}}">加载中...</view>
+    <view class="list-end" wx:elif="{{workList.length && !hasMore}}">已显示全部作品</view>
+  </view>
+</view>

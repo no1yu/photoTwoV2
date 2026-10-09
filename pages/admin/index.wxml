@@ -1,0 +1,36 @@
+<view class="admin-page">
+  <page-header title="登录确认" light="{{true}}" />
+  <view class="admin-content">
+    <view class="auth-panel">
+      <view class="device-scene">
+        <view class="desktop-window">
+          <view class="desktop-toolbar"><view class="window-dot"></view><view class="window-dot"></view><view class="window-dot"></view></view>
+          <view class="desktop-body">
+            <view class="desktop-sidebar"><view class="sidebar-line active"></view><view class="sidebar-line"></view><view class="sidebar-line"></view></view>
+            <view class="desktop-workspace"><view class="desktop-photo"></view><view class="workspace-line"></view></view>
+          </view>
+        </view>
+        <view class="desktop-stand"></view>
+        <view class="phone-window">
+          <view class="phone-speaker"></view>
+          <view class="phone-avatar"></view>
+          <view class="phone-line"></view>
+          <view class="phone-line short"></view>
+          <view class="phone-confirm">
+            <view wx:if="{{isAuthorized}}" class="phone-check"></view>
+            <block wx:else><view class="phone-dot"></view><view class="phone-dot"></view><view class="phone-dot"></view></block>
+          </view>
+        </view>
+      </view>
+      <text class="auth-title">{{isAuthorized ? '登录成功' : '确认登录网页后台'}}</text>
+      <text class="auth-note">{{isAuthorized ? '请返回电脑继续操作' : '请确认是你本人发起的登录'}}</text>
+      <view class="auth-actions">
+        <block wx:if="{{!isAuthorized}}">
+          <button class="primary-action authorize-button" loading="{{submitting}}" disabled="{{submitting}}" bindtap="login">确认登录</button>
+          <button class="cancel-button" disabled="{{submitting}}" bindtap="closeLogin">取消</button>
+        </block>
+        <button wx:else class="primary-action return-button" bindtap="closeLogin">返回首页</button>
+      </view>
+    </view>
+  </view>
+</view>

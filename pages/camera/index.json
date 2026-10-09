@@ -1,0 +1,7 @@
+{
+  "navigationBarBackgroundColor": "#111111",
+  "navigationBarTextStyle": "white",
+  "usingComponents": {
+    "page-header": "/components/page-header/index"
+  }
+}

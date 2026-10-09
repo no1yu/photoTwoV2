@@ -1,0 +1,153 @@
+.works {
+  min-height: 100vh;
+}
+
+.works-content {
+  padding: 28rpx 28rpx 32rpx;
+}
+
+.works-tip {
+  display: flex;
+  align-items: center;
+  gap: 12rpx;
+  margin-bottom: 24rpx;
+  padding: 20rpx 24rpx;
+  border-radius: 16rpx;
+  background: #FFF5E6;
+  color: #B18435;
+  font-size: 26rpx;
+  line-height: 1.5;
+}
+
+.photo-list {
+  display: flex;
+  flex-direction: column;
+  gap: 20rpx;
+}
+
+.photo-card {
+  width: 100%;
+  padding: 24rpx;
+  border-radius: 20rpx;
+  background: #fff;
+}
+
+.photo-main {
+  display: flex;
+  align-items: flex-start;
+}
+
+.photo-preview {
+  flex-shrink: 0;
+  width: 150rpx;
+  height: 210rpx;
+  padding: 8rpx;
+  border-radius: 8rpx;
+  background: #f5f6f8;
+}
+
+.photo-preview image {
+  width: 100%;
+  height: 100%;
+}
+
+.photo-info {
+  flex: 1;
+  min-width: 0;
+  margin-left: 24rpx;
+  padding: 4rpx 0;
+}
+
+.photo-name {
+  color: #30343B;
+  font-size: 32rpx;
+  font-weight: 500;
+  line-height: 1.5;
+  word-break: break-all;
+  white-space: normal;
+}
+
+.photo-size,
+.photo-time {
+  margin-top: 12rpx;
+  color: #8A8E96;
+  font-size: 24rpx;
+  line-height: 1.5;
+}
+
+.photo-actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 20rpx;
+  padding-top: 18rpx;
+  border-top: 1rpx solid #F0F1F3;
+}
+
+.download-btn,
+.delete-btn {
+  width: 132rpx;
+  height: 72rpx;
+  margin: 0;
+  border-radius: 36rpx;
+  font-size: 26rpx;
+  font-weight: 400;
+  line-height: 72rpx;
+}
+
+.download-btn {
+  background: #3D68ED;
+  color: #fff;
+}
+
+.delete-btn {
+  width: 88rpx;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  color: #8A8E96;
+}
+
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 112rpx 28rpx;
+}
+
+.empty-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 160rpx;
+  height: 160rpx;
+  margin-bottom: 24rpx;
+}
+
+.empty-title {
+  color: #30343B;
+  font-size: 32rpx;
+  font-weight: 500;
+  line-height: 1.5;
+}
+
+.empty-desc {
+  margin-top: 12rpx;
+  color: #8A8E96;
+  font-size: 26rpx;
+  line-height: 1.5;
+}
+
+.loading-state {
+  padding: 70rpx 0;
+  color: #8A8E96;
+  font-size: 26rpx;
+  text-align: center;
+}
+
+.list-end {
+  padding: 32rpx 0 4rpx;
+  color: #8A8E96;
+  font-size: 24rpx;
+  text-align: center;
+}

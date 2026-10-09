@@ -1,0 +1,19 @@
+<view class="login-page">
+  <page-header />
+  <view class="login-hero">
+    <image class="login-illustration" src="/images/login/login-hero.png" mode="aspectFit"></image>
+  </view>
+  <view class="login-content">
+    <view class="login-panel">
+      <view class="login-brand">
+        <text class="brand-title">{{title}}</text>
+        <text class="brand-desc">拍一张满意的证件照</text>
+      </view>
+      <view class="login-actions">
+        <button wx:if="{{loginType === 1}}" bindtap="login" class="primary-action login-button">快捷登录</button>
+        <button wx:elif="{{loginType === 2}}" open-type="getPhoneNumber" bindgetphonenumber="getPhoneNumber" class="primary-action login-button">快捷登录</button>
+        <button bindtap="cancelLogin" class="cancel-button">取消登录</button>
+      </view>
+    </view>
+  </view>
+</view>

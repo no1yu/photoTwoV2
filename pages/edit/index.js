@@ -1,0 +1,934 @@
+import { getToken } from '../../utils/auth'
+import { saveImageFromUrl } from '../../utils/download'
+import { createRewardedAd } from '../../utils/rewarded-ad'
+import { request } from '../../utils/request'
+
+const app = getApp()
+
+Page({
+  data: {
+    imageData: {},
+    photoName: '',
+    showScale: 480 / 295,
+    width: 0,
+    height: 0,
+    left: 0,
+    top: 0,
+    scale: 1,
+    rotate: 0,
+    bgc: '#ffffff',
+    maskLeft: 0,
+    maskTop: 0,
+    maskScale: 1,
+    maskRotate: 0,
+    pick: false,
+    colorPickerInit: '',
+    color: '#ffffff',
+    //1未选择背景颜色，2已选择背景颜色
+    colorType: 1,
+    picUrl: '',
+    downloadMode: null,
+    downloadPrice: 0,
+    payType: 1,
+    videoUnitId: '',
+    //1未解锁，2支付返回成功，等待后端支付回调成功，3已解锁
+    downloadState: 1,
+    downloadDrawerVisible: false,
+    downloadDrawerClosing: false,
+    downloadOptions: [],
+    downloadPhotoMeta: '',
+    selectedDownloadMethod: 0,
+    kb: 0,
+    dpi: 0,
+    render: 0,
+    active: '1',
+    clothesCategory: 0,
+    clothesBrowseCategory: 1,
+    clothesId: 0,
+    clothesEnabled: false,
+    clothesList: [],
+    imageReady: false,
+    updating: false,
+    //1普通证件照，2高清证件照
+    photoType: 1,
+    switching: false,
+    saving: false
+  },
+
+  onLoad() {
+    this.unloaded = false;
+    this.getOpenerEventChannel().on('photoEditData', (data) => {
+      const windowInfo = wx.getWindowInfo();
+      const scale = Math.min(240 / data.widthPx, (windowInfo.windowWidth - 56 * windowInfo.windowWidth / 750) / data.widthPx, Math.min(336, windowInfo.windowHeight * 0.36) / data.heightPx);
+      this.setData({
+        imageData: data,
+        photoName: data.name,
+        dpi: data.dpi,
+        width: data.widthPx * scale,
+        height: data.heightPx * scale,
+        imageReady: !!data.previewUrl
+      });
+      if (data.category == 1 && data.itemId == 759) {
+        this.setData({
+          kb: 30
+        });
+      }
+      wx.setNavigationBarTitle({
+        title: data.name
+      });
+    });
+
+    this.getDownloadSet();
+    this.getClothesList(1);
+  },
+
+  onUnload() {
+    this.unloaded = true;
+
+    if (this.downloadDrawerTimer) {
+      clearTimeout(this.downloadDrawerTimer);
+    }
+
+    if (this.rewardedAd) {
+      this.rewardedAd.destroy();
+    }
+  },
+
+  getDownloadSet() {
+    //智能证件照固定使用应用ID 3读取下载配置
+    return request({
+      url: app.url + 'order/getDownloadSet?appId=3',
+      header: {
+        token: getToken()
+      },
+      method: 'POST'
+    }).then((res) => {
+      if (res.code !== 200) {
+        return;
+      }
+
+      const downloadMode = res.data.status;
+      this.setData({
+        downloadMode,
+        downloadPrice: res.data.downloadPrice,
+        payType: res.data.payType,
+        videoUnitId: res.data.videoUnitId
+      });
+
+      if (this.rewardedAd) {
+        this.rewardedAd.destroy();
+      }
+      this.rewardedAd = null;
+
+      //只有看广告下载和广告、付费任选时才需要创建激励视频
+      if (downloadMode !== 2 && downloadMode !== 4) {
+        return;
+      }
+
+      this.rewardedAd = createRewardedAd({
+        adUnitId: res.data.videoUnitId,
+        onReward: () => {
+          if (!this.unloaded) {
+            this.downloadHDPhoto(1);
+          }
+        },
+        onClose: () => {
+          if (!this.unloaded) {
+            this.setData({
+              saving: false
+            });
+          }
+        },
+        onErrorReward: true
+      });
+    }).catch(() => {});
+  },
+
+  getClothesList(category) {
+    return request({
+      url: app.url + 'api/getClothesList?category=' + category,
+      method: 'POST'
+    }).then((res) => {
+      if (res.code !== 200) {
+        this.setData({
+          clothesEnabled: false,
+          clothesList: []
+        });
+        return;
+      }
+
+      this.setData({
+        clothesEnabled: true,
+        clothesList: res.data
+      });
+    }).catch(() => {});
+  },
+
+  async switchPhotoType(e) {
+    const type = Number(e.currentTarget.dataset.type);
+    if (type === this.data.photoType || this.data.updating || this.data.switching || this.data.saving || this.data.downloadDrawerVisible) {
+      return;
+    }
+
+    this.setData({
+      switching: true
+    });
+    try {
+      //高清透明照只生成一次，已经生成过时后端会直接返回
+      if (type === 2) {
+        const res = await request({
+          url: app.url + 'api/createIdHdPhoto?photoId=' + this.data.imageData.photoId,
+          header: {
+            token: getToken()
+          },
+          method: 'POST'
+        });
+        if (res.code != 200) {
+          if (res.code == 404) {
+            wx.showToast({
+              title: res.data,
+              icon: 'none'
+            });
+          }
+          return;
+        }
+      }
+      if (this.unloaded) {
+        return;
+      }
+
+      await this.updateColor(this.data.color, type);
+      if (!this.unloaded) {
+        this.setData({
+          photoType: type,
+          colorType: 2
+        });
+      }
+    } catch (err) {} finally {
+      if (!this.unloaded) {
+        this.setData({
+          switching: false
+        });
+      }
+    }
+  },
+
+  toggleBg(e) {
+    if (this.data.updating || this.data.switching || this.data.saving) {
+      return;
+    }
+
+    const color = e.currentTarget.dataset.color;
+    this.setData({
+      color,
+      colorType: 2
+    });
+
+    this.updateColor(color, this.data.photoType).catch(() => {});
+  },
+
+  toPick() {
+    if (this.data.updating || this.data.switching || this.data.saving) {
+      return;
+    }
+
+    const color = this.data.color;
+    this.setData({
+      colorPickerInit: 'rgb(' + parseInt(color.slice(1, 3), 16) + ',' + parseInt(color.slice(3, 5), 16) + ',' + parseInt(color.slice(5, 7), 16) + ')',
+      pick: true
+    });
+  },
+
+  hideColorPicker() {
+    this.setData({
+      pick: false
+    });
+  },
+
+  pickColor(e) {
+    if (this.data.updating || this.data.switching || this.data.saving) {
+      return;
+    }
+
+    const color = this.rgbStringToHex(e.detail.color);
+    this.setData({
+      color,
+      colorType: 2,
+      pick: false
+    });
+
+    this.updateColor(color, this.data.photoType).catch(() => {});
+  },
+
+  updateColor(color, type) {
+    if (this.data.updating) {
+      wx.showToast({
+        title: '正在制作，请稍候',
+        icon: 'none'
+      });
+      return Promise.reject(new Error('背景制作中'));
+    }
+    const requestData = {
+      photoId: this.data.imageData.photoId,
+      colors: color,
+      kb: this.data.kb,
+      render: this.data.render,
+      dpi: this.data.dpi,
+      hd: type == 2 ? 1 : 0
+    };
+
+    if (!this.data.switching) {
+      wx.showLoading({
+        title: '制作中...'
+      });
+    }
+    this.setData({
+      updating: true
+    });
+
+    return request({
+      url: app.url + 'api/updateIdPhoto',
+      data: requestData,
+      header: {
+        token: getToken()
+      },
+      method: 'POST'
+    }).then((res) => {
+      if (res.code == 200) {
+        if (this.unloaded) {
+          return res.data;
+        }
+
+        this.setData({
+          imageData: res.data
+        });
+        return res.data;
+      }
+
+      if (res.code == 404) {
+        wx.showToast({
+          title: res.data,
+          icon: 'none'
+        });
+      }
+
+      throw new Error(res.data || '制作失败');
+    }).finally(() => {
+      if (!this.unloaded) {
+        this.setData({
+          updating: false
+        });
+      }
+      if (!this.data.switching) {
+        wx.hideLoading();
+      }
+    });
+  },
+
+  selectClothesCategory(e) {
+    const category = Number(e.currentTarget.dataset.category);
+    this.setData({
+      clothesBrowseCategory: category,
+      clothesList: []
+    });
+    this.getClothesList(category);
+  },
+
+  selectClothes(e) {
+    const category = Number(e.currentTarget.dataset.category);
+    const clothesId = Number(e.currentTarget.dataset.id);
+    this.updateClothes(category, clothesId).catch(() => {});
+  },
+
+  cancelClothes() {
+    if (this.data.clothesCategory === 0) {
+      return;
+    }
+    this.updateClothes(0, 0).catch(() => {});
+  },
+
+  updateClothes(category, clothesId) {
+    if (this.data.switching || this.data.saving) {
+      return Promise.reject(new Error('照片处理中'));
+    }
+
+    const cancelClothes = category === 0 && clothesId === 0;
+    const selectClothes = this.data.clothesList.some((item) => item.category === category && item.clothesId === clothesId);
+    if (!cancelClothes && !selectClothes) {
+      wx.showToast({
+        title: '服装参数无效',
+        icon: 'none'
+      });
+      return Promise.reject(new Error('服装参数无效'));
+    }
+
+    if (this.data.updating) {
+      wx.showToast({
+        title: '正在制作，请稍候',
+        icon: 'none'
+      });
+      return Promise.reject(new Error('换装制作中'));
+    }
+
+    wx.showLoading({
+      title: '制作中...'
+    });
+    this.setData({
+      updating: true
+    });
+
+    return request({
+      url: app.url + 'api/changeClothes',
+      data: {
+        photoId: this.data.imageData.photoId,
+        clothesCategory: category,
+        clothesId,
+        kb: this.data.kb,
+        dpi: this.data.dpi,
+        hd: this.data.photoType == 2 ? 1 : 0
+      },
+      header: {
+        token: getToken()
+      },
+      method: 'POST'
+    }).then((res) => {
+      if (res.code == 200) {
+        if (this.unloaded) {
+          return res.data;
+        }
+
+        const nextData = {
+          imageData: res.data,
+          clothesId,
+          clothesCategory: category
+        };
+        //未选择背景就换装时，后端会把白色背景作为当前正式选择保存
+        if (category !== 0 && this.data.colorType === 1) {
+          nextData.color = '#ffffff';
+          nextData.bgc = '#ffffff';
+          nextData.colorType = 2;
+        }
+        this.setData(nextData);
+        return res.data;
+      }
+
+      if (res.code == 404) {
+        wx.showToast({
+          title: res.data,
+          icon: 'none'
+        });
+      }
+      throw new Error(res.data || '换装失败');
+    }).finally(() => {
+      if (!this.unloaded) {
+        this.setData({
+          updating: false
+        });
+      }
+      wx.hideLoading();
+    });
+  },
+
+  async openSavePhoto() {
+    if (this.data.updating || this.data.switching || this.data.saving || this.data.downloadDrawerVisible) {
+      return;
+    }
+
+    if (this.data.colorType == 1) {
+      wx.showToast({
+        title: '您还没有选择背景颜色哦~',
+        icon: 'none',
+        duration: 3000
+      });
+      return;
+    }
+
+    //预览照始终免费保存，不受高清照下载模式影响
+    if (this.data.photoType === 1) {
+      this.saveNormalPhoto();
+      return;
+    }
+
+    //支付返回成功，等待后端支付回调成功时，根据照片ID继续复查支付结果
+    if (this.data.downloadState === 2) {
+      this.downloadHDPhoto();
+      return;
+    }
+
+    if (this.data.downloadMode === null) {
+      this.setData({
+        saving: true
+      });
+      await this.getDownloadSet();
+      if (this.unloaded) {
+        return;
+      }
+      this.setData({
+        saving: false
+      });
+    }
+
+    if (this.data.downloadMode === null) {
+      wx.showToast({
+        title: '下载配置读取失败，请重试',
+        icon: 'none'
+      });
+      return;
+    }
+
+    const downloadMode = this.data.downloadMode;
+    //已经解锁的照片不受后台后来关闭功能影响
+    if (downloadMode === 0 && this.data.downloadState !== 3) {
+      wx.showToast({
+        title: '当前功能维护中，请稍后再试',
+        icon: 'none'
+      });
+      return;
+    }
+
+    if (this.data.downloadState === 3) {
+      this.downloadHDPhoto();
+      return;
+    }
+
+    this.openDownloadDrawer();
+  },
+
+  getDownloadOptions() {
+    const downloadMode = this.data.downloadMode;
+    if (downloadMode === 1) {
+      return [{method: 1, name: '免费下载', price: ''}];
+    }
+    if (downloadMode === 2) {
+      return [{method: 2, name: '看广告下载', price: ''}];
+    }
+    const paidOption = {method: 3, name: '付费下载', price: '¥' + this.data.downloadPrice.toFixed(2)};
+    if (downloadMode === 3) {
+      return [paidOption];
+    }
+    if (downloadMode === 4) {
+      return [{method: 2, name: '看广告下载', price: ''}, paidOption];
+    }
+    return [];
+  },
+
+  openDownloadDrawer() {
+    const downloadOptions = this.getDownloadOptions();
+    const backgroundNames = {
+      '#FFFFFF': '白色背景',
+      '#438EDB': '蓝色背景',
+      '#FF0000': '红色背景',
+      '#66B5F2': '浅蓝背景',
+      '#07C160': '绿色背景',
+      '#FFC300': '黄色背景'
+    };
+    const renderNames = ['纯色效果', '上下渐变', '中心渐变'];
+    const clothesNames = ['原服装', '男装', '女装', '儿童装'];
+    const backgroundName = backgroundNames[this.data.color.toUpperCase()] || '自定义背景';
+    this.setData({
+      downloadDrawerVisible: true,
+      downloadDrawerClosing: false,
+      downloadOptions,
+      downloadPhotoMeta: backgroundName + ' · ' + renderNames[this.data.render] + ' · ' + clothesNames[this.data.clothesCategory],
+      selectedDownloadMethod: downloadOptions[0].method
+    });
+  },
+
+  closeDownloadDrawer(afterClose) {
+    if (!this.data.downloadDrawerVisible || this.data.downloadDrawerClosing) {
+      return;
+    }
+
+    this.setData({
+      downloadDrawerClosing: true
+    });
+
+    this.downloadDrawerTimer = setTimeout(() => {
+      if (this.unloaded) {
+        return;
+      }
+
+      this.setData({
+        downloadDrawerVisible: false,
+        downloadDrawerClosing: false
+      });
+      if (typeof afterClose === 'function') {
+        afterClose();
+      }
+    }, 240);
+  },
+
+  selectDownloadMethod(e) {
+    this.setData({
+      selectedDownloadMethod: Number(e.currentTarget.dataset.method)
+    });
+  },
+
+  confirmDownloadMethod() {
+    const downloadMethod = this.data.selectedDownloadMethod;
+    this.closeDownloadDrawer(() => {
+      this.executeDownloadMethod(downloadMethod);
+    });
+  },
+
+  executeDownloadMethod(downloadMethod) {
+    if (this.data.updating || this.data.switching || this.data.saving) {
+      return;
+    }
+
+    if (downloadMethod === 1) {
+      this.downloadHDPhoto();
+      return;
+    }
+    if (downloadMethod === 2) {
+      this.watchAdDownload();
+      return;
+    }
+    if (downloadMethod === 3) {
+      this.createOrder();
+    }
+  },
+
+  noop() {},
+
+  async saveParams() {
+    if (this.data.updating || this.data.switching || this.data.saving) {
+      return;
+    }
+
+    let kb = parseInt(this.data.kb, 10);
+    let dpi = parseInt(this.data.dpi, 10);
+
+    if (isNaN(kb) || kb < 0) {
+      kb = 0;
+    }
+    if (isNaN(dpi) || dpi < 72) {
+      dpi = 72;
+    }
+
+    this.setData({
+      kb,
+      dpi,
+      colorType: 2
+    });
+
+    try {
+      await this.updateColor(this.data.color, this.data.photoType);
+      wx.showToast({
+        title: '修改成功',
+        icon: 'none',
+        duration: 1500
+      });
+    } catch (err) {}
+  },
+
+  saveNormalPhoto() {
+    this.setData({
+      saving: true
+    });
+
+    //普通预览保存只记录预览照作品，不会解锁高清下载权
+    return request({
+      url: app.url + 'api/updateUserPhonto?photoId=' + this.data.imageData.photoId,
+      header: {
+        token: getToken()
+      },
+      method: 'POST',
+      loadingText: '下载中...'
+    }).then((res) => {
+      if (res.code == 200) {
+        this.setData({
+          picUrl: res.data.picUrl
+        });
+        return saveImageFromUrl(res.data.picUrl);
+      } else if (res.code == 404) {
+        wx.showToast({
+          title: res.data,
+          icon: 'none'
+        });
+      }
+    }).catch(() => {}).finally(() => {
+      if (!this.unloaded) {
+        this.setData({
+          saving: false
+        });
+      }
+    });
+  },
+
+  watchAdDownload() {
+    this.setData({
+      saving: true
+    });
+
+    //广告加载或播放失败时由激励视频工具直接放行，主动提前关闭不会放行
+    if (this.rewardedAd) {
+      this.rewardedAd.show();
+    } else {
+      this.downloadHDPhoto(1);
+    }
+  },
+
+  async createOrder() {
+    this.setData({
+      saving: true
+    });
+
+    let url = app.url + 'order/createOrder?photoId=' + this.data.imageData.photoId;
+    if (this.data.payType === 2) {
+      wx.showLoading({
+        title: '准备支付中...'
+      });
+      try {
+        //本次支付直接静默登录，只获取临时凭证，不改变业务登录状态
+        const loginRes = await new Promise((resolve, reject) => {
+          wx.login({
+            success: resolve,
+            fail: reject
+          });
+        });
+        url += '&code=' + encodeURIComponent(loginRes.code);
+      } catch (err) {
+        this.setData({
+          saving: false
+        });
+        wx.showToast({
+          title: '微信登录失败，请重试',
+          icon: 'none'
+        });
+        return;
+      } finally {
+        wx.hideLoading();
+      }
+    }
+
+    //每次新的付款操作都创建新订单，取消或失败的旧订单继续保留待支付状态
+    request({
+      url,
+      header: {
+        token: getToken()
+      },
+      method: 'POST',
+      loadingText: '创建订单中...'
+    }).then((res) => {
+      if (res.code != 200) {
+        this.setData({
+          saving: false
+        });
+        if (res.code == 404) {
+          wx.showToast({
+            title: res.data,
+            icon: 'none'
+          });
+        }
+        return;
+      }
+
+      const order = res.data;
+      if (order.type === 2) {
+        if (typeof wx.requestVirtualPayment !== 'function') {
+          this.setData({
+            saving: false
+          });
+          wx.showToast({
+            title: '请升级微信后使用虚拟支付',
+            icon: 'none'
+          });
+          return;
+        }
+
+        wx.requestVirtualPayment({
+          mode: order.mode,
+          signData: order.signData,
+          paySig: order.paySig,
+          signature: order.signature,
+          success: () => {
+            //虚拟支付返回成功后仍由下载接口核对后端回调结果
+            this.setData({
+              downloadState: 2
+            });
+            this.downloadHDPhoto();
+          },
+          fail: (err) => {
+            this.setData({
+              downloadState: 1,
+              saving: false
+            });
+            if (err.errCode === -2 || err.errMsg.indexOf('cancel') !== -1) {
+              return;
+            }
+            wx.showToast({
+              title: '支付失败'+ err.errMsg,
+              icon: 'none'
+            });
+          }
+        });
+        return;
+      }
+
+      wx.requestPayment({
+        timeStamp: order.timeStamp,
+        nonceStr: order.nonceStr,
+        package: order.packageVal,
+        signType: order.signType,
+        paySign: order.paySign,
+        success: (payRes) => {
+          //微信支付返回成功后等待后端支付回调成功，再由下载接口解锁照片
+          if (payRes.errMsg === 'requestPayment:ok') {
+            this.setData({
+              downloadState: 2
+            });
+            this.downloadHDPhoto();
+          } else {
+            this.setData({
+              saving: false
+            });
+          }
+        },
+        fail: (err) => {
+          this.setData({
+            downloadState: 1,
+            saving: false
+          });
+          if (err.errMsg.indexOf('cancel') !== -1) {
+            return;
+          }
+          wx.showToast({
+            title: '支付失败'+ err.errMsg,
+            icon: 'none'
+          });
+        }
+      });
+    }).catch(() => {
+      if (!this.unloaded) {
+        this.setData({
+          saving: false
+        });
+      }
+    });
+  },
+
+  downloadHDPhoto(rewarded = 0) {
+    this.setData({
+      saving: true
+    });
+
+    //所有下载都明确传入广告完成状态，0未看广告，1已看完广告
+    const url = app.url + 'order/downloadPhoto?photoId=' + this.data.imageData.photoId + '&rewarded=' + rewarded;
+
+    return request({
+      url,
+      header: {
+        token: getToken()
+      },
+      method: 'POST',
+      loadingText: '下载中...'
+    }).then((res) => {
+      if (res.code == 200) {
+        //后端发放原图后标记当前照片已解锁，照片保留期间换背景和保存不再收费
+        this.setData({
+          picUrl: res.data.picUrl,
+          downloadState: 3
+        });
+        return saveImageFromUrl(res.data.picUrl);
+      } else if (res.code == 404) {
+        //支付回调延迟时保留确认状态，下次点击继续根据照片ID复查
+        wx.showToast({
+          title: this.data.downloadState === 2 ? '支付结果确认中，请稍后重试' : res.data,
+          icon: 'none'
+        });
+      }
+    }).catch(() => {}).finally(() => {
+      if (!this.unloaded) {
+        this.setData({
+          saving: false
+        });
+      }
+    });
+  },
+
+  rgbStringToHex(rgbString) {
+    const rgbValues = rgbString.match(/\d+/g);
+    if (!rgbValues || rgbValues.length < 3) {
+      return this.data.color;
+    }
+
+    const r = parseInt(rgbValues[0], 10);
+    const g = parseInt(rgbValues[1], 10);
+    const b = parseInt(rgbValues[2], 10);
+
+    return '#' + ((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1).toUpperCase();
+  },
+
+  onKbInput(event) {
+    if (this.data.updating || this.data.switching || this.data.saving) {
+      return;
+    }
+
+    let value = parseInt(event.detail.value, 10);
+    if (isNaN(value) || value < 0) {
+      wx.showToast({
+        title: '最小只能0哦~',
+        icon: 'none',
+        duration: 1500
+      });
+      value = 0;
+    } else if (value > 1000) {
+      wx.showToast({
+        title: '最大只能1000哦~',
+        icon: 'none',
+        duration: 1500
+      });
+      value = 1000;
+    }
+
+    this.setData({
+      kb: value
+    });
+  },
+
+  onDpiInput(event) {
+    if (this.data.updating || this.data.switching || this.data.saving) {
+      return;
+    }
+
+    let value = parseInt(event.detail.value, 10);
+    if (isNaN(value) || value < 72) {
+      wx.showToast({
+        title: '最小只能72哦~',
+        icon: 'none',
+        duration: 1500
+      });
+      value = 72;
+    } else if (value > 1000) {
+      wx.showToast({
+        title: '最大只能1000哦~',
+        icon: 'none',
+        duration: 1500
+      });
+      value = 1000;
+    }
+
+    this.setData({
+      dpi: value
+    });
+  },
+
+  onRenderChange(event) {
+    if (this.data.updating || this.data.switching || this.data.saving) {
+      return;
+    }
+
+    const value = parseInt(event.detail.value, 10);
+    this.setData({
+      render: value
+    });
+  },
+
+  clickTab(event) {
+    const { name } = event.detail;
+    this.setData({
+      active: name
+    });
+  }
+});

@@ -1,0 +1,46 @@
+<view class="custom-page page-shell">
+  <page-header title="自定义尺寸" back="{{true}}" light="{{true}}" />
+
+  <view class="custom-content">
+    <view class="form-card">
+      <view class="form-row">
+        <text class="form-label">规格名称</text>
+        <input class="{{focusedInput == 'name' ? 'focused' : ''}}" value="{{name}}" type="text" placeholder="请输入名称" placeholder-class="input-placeholder" maxlength="10" data-field="name" bindinput="changeName" bindfocus="onInputFocus" bindblur="onInputBlur" />
+      </view>
+      <view class="form-row">
+        <text class="form-label">像素尺寸</text>
+        <view class="dimension-fields">
+          <input class="{{focusedInput == 'width' ? 'focused' : ''}}" value="{{width}}" type="number" placeholder="请输入宽度" placeholder-class="input-placeholder" maxlength="4" data-field="width" bindinput="changeWidth" bindfocus="onInputFocus" bindblur="onInputBlur" />
+          <text class="dimension-separator">×</text>
+          <input class="{{focusedInput == 'height' ? 'focused' : ''}}" value="{{height}}" type="number" placeholder="请输入高度" placeholder-class="input-placeholder" maxlength="4" data-field="height" bindinput="changeHeight" bindfocus="onInputFocus" bindblur="onInputBlur" />
+          <text class="form-unit">px</text>
+        </view>
+      </view>
+      <view class="form-row">
+        <text class="form-label">分辨率</text>
+        <input class="{{focusedInput == 'dpi' ? 'focused' : ''}}" value="{{dpi}}" type="number" placeholder="请输入分辨率" placeholder-class="input-placeholder" maxlength="4" data-field="dpi" bindinput="changeDpi" bindfocus="onInputFocus" bindblur="onInputBlur" />
+        <text class="form-unit">DPI</text>
+      </view>
+      <view class="form-row form-result">
+        <text class="form-label">打印尺寸</text>
+        <text>{{size}}</text>
+      </view>
+    </view>
+    <view class="form-tip"><text>填写像素和分辨率后，会自动计算打印尺寸</text></view>
+
+    <view class="preview-card">
+      <view class="preview-frame">
+        <van-icon name="idcard" size="72rpx" color="#3D68ED" />
+      </view>
+      <view class="preview-info">
+        <text class="preview-title">{{name || '我的专属规格'}}</text>
+        <text class="preview-px">{{width || 0}} × {{height || 0}} px</text>
+        <text class="preview-size">{{size}}</text>
+      </view>
+    </view>
+  </view>
+
+  <view class="bottom-bar">
+    <button bindtap="addSize" class="save-button" disabled="{{submitting}}" loading="{{submitting}}">保存尺寸</button>
+  </view>
+</view>

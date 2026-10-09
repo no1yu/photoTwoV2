@@ -1,0 +1,56 @@
+<view class="home-page">
+  <page-header title="{{title}}" left="{{true}}" light="{{true}}" />
+
+  <view class="home-content">
+    <view class="search-bar" bindtap="navigateTo" data-url="/pages/searchs/index">
+      <van-icon name="search" size="38rpx" color="#8A8E96" />
+      <text>搜索规格名称、尺寸</text>
+    </view>
+
+    <view class="hero">
+      <view class="hero-content">
+        <text class="hero-title">拍一张</text>
+        <text class="hero-title">满意的证件照</text>
+        <text class="hero-desc">换底色 · 换装 · 高清保存</text>
+        <button class="hero-button" bindtap="navigateTo" data-url="/pages/sizeList/index">开始制作</button>
+      </view>
+      <view class="hero-photos">
+        <view class="photo-frame photo-back">
+          <image src="/images/home/hero-portrait-shirt.png" mode="aspectFill"></image>
+        </view>
+        <view class="photo-frame photo-front">
+          <image src="/images/home/hero-portrait-shirt.png" mode="aspectFill"></image>
+        </view>
+      </view>
+    </view>
+
+    <view class="quick-grid">
+      <view class="quick-item" bindtap="navigateTo" data-url="/pages/sizeList/index" data-category="1">
+        <view class="quick-icon"><van-icon name="idcard" size="64rpx" color="#30343B" /></view>
+        <text class="quick-label">常用尺寸</text>
+      </view>
+      <view class="quick-item" bindtap="loginJump" data-url="/pages/custom/index">
+        <view class="quick-icon"><van-icon name="edit" size="64rpx" color="#30343B" /></view>
+        <text class="quick-label">自定义尺寸</text>
+      </view>
+      <view class="quick-item" bindtap="loginJump" data-url="/pages/works/index">
+        <view class="quick-icon"><van-icon name="photo-o" size="64rpx" color="#30343B" /></view>
+        <text class="quick-label">我的作品</text>
+      </view>
+    </view>
+
+    <view class="section-head">
+      <text class="section-title">常用尺寸</text>
+      <view class="section-more" bindtap="navigateTo" data-url="/pages/sizeList/index"><text>查看更多</text><van-icon name="arrow" size="24rpx" color="#8A8E96" /></view>
+    </view>
+    <view class="size-grid">
+      <view class="size-card" wx:for="{{photoSizeList}}" wx:key="id" data-index="{{index}}" bindtap="goNextPage">
+        <view class="size-copy">
+          <text class="size-title">{{item.name}}</text>
+          <text class="size-detail">{{item.widthPx}} × {{item.heightPx}} px</text>
+          <text class="size-detail">{{item.widthMm}} × {{item.heightMm}} mm</text>
+        </view>
+      </view>
+    </view>
+  </view>
+</view>

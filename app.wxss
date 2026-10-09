@@ -1,0 +1,344 @@
+page {
+  min-height: 100vh;
+  background: #f5f6f8;
+  color: #30343b;
+  box-sizing: border-box;
+  font-family: -apple-system, BlinkMacSystemFont, "Helvetica Neue", Helvetica, Arial, sans-serif;
+}
+
+view,
+text,
+image,
+button,
+input,
+scroll-view {
+  box-sizing: border-box;
+}
+
+image {
+  display: block;
+}
+
+button {
+  background: initial;
+  padding: 0;
+}
+
+button:focus {
+  outline: 0;
+}
+
+button::after {
+  border: none;
+}
+
+input,
+textarea {
+  box-sizing: border-box;
+  width: 100%;
+  border: none;
+  border-radius: 0;
+  background: transparent;
+  color: #30343b;
+  font-size: 28rpx;
+  padding: 0;
+}
+
+input {
+  height: 88rpx;
+  padding: 0;
+}
+
+textarea {
+  padding: 0;
+  line-height: 1.6;
+}
+
+input:focus,
+textarea:focus {
+  background: transparent;
+}
+
+button[disabled] {
+  background: #a8bbed;
+  color: #fff;
+}
+
+.page-shell {
+  min-height: 100vh;
+  background: #f5f6f8;
+  padding-bottom: calc(36rpx + env(safe-area-inset-bottom));
+}
+
+.page-pad {
+  padding: 28rpx;
+}
+
+.surface {
+  background: #fff;
+  border-radius: 20rpx;
+}
+
+.hairline {
+  height: 1rpx;
+  background: rgba(0, 0, 0, 0.08);
+}
+
+.primary-action {
+  height: 88rpx;
+  border-radius: 44rpx;
+  background: #3d68ed;
+  color: #fff;
+  font-size: 30rpx;
+  font-weight: 400;
+  line-height: 88rpx;
+  text-align: center;
+}
+
+.secondary-action {
+  height: 88rpx;
+  border-radius: 44rpx;
+  background: #fff;
+  color: #3d68ed;
+  font-size: 30rpx;
+  font-weight: 400;
+  line-height: 88rpx;
+  text-align: center;
+  border: 1rpx solid #3d68ed;
+}
+
+.primary-action:active,
+.secondary-action:active {
+  opacity: 0.82;
+}
+
+.download-drawer-mask {
+  position: fixed;
+  inset: 0;
+  z-index: 1200;
+  display: flex;
+  align-items: flex-end;
+  background: rgba(28, 42, 74, 0.42);
+  animation: downloadDrawerFadeIn 180ms ease-out both;
+}
+
+.download-drawer-panel {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  padding: 36rpx 32rpx calc(36rpx + env(safe-area-inset-bottom));
+  border-radius: 24rpx 24rpx 0 0;
+  background: #fff;
+  animation: downloadDrawerUp 240ms cubic-bezier(0.18, 0.86, 0.32, 1) both;
+}
+
+.download-drawer-mask.closing {
+  pointer-events: none;
+  animation: downloadDrawerFadeOut 240ms ease-in both;
+}
+
+.download-drawer-mask.closing .download-drawer-panel {
+  animation: downloadDrawerDown 240ms ease-in both;
+}
+
+.download-drawer-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 32rpx;
+}
+
+.download-drawer-title {
+  color: #30343b;
+  font-size: 32rpx;
+  font-weight: 500;
+  line-height: 44rpx;
+}
+
+.download-drawer-close {
+  width: 44px;
+  height: 44px;
+  color: #8a8e96;
+  font-size: 38rpx;
+  line-height: 44px;
+  text-align: center;
+}
+
+.download-photo-summary {
+  display: flex;
+  align-items: center;
+  min-height: 156rpx;
+  margin-bottom: 36rpx;
+  padding: 24rpx;
+  border-radius: 16rpx;
+  background: #f5f6f8;
+}
+
+.download-photo-thumbnail {
+  flex-shrink: 0;
+  width: 120rpx;
+  height: 156rpx;
+  border-radius: 6rpx;
+  background: #ececec;
+}
+
+.download-photo-info {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  min-width: 0;
+  margin-left: 28rpx;
+  padding: 0;
+}
+
+.download-photo-name {
+  overflow: hidden;
+  color: #30343b;
+  font-size: 30rpx;
+  font-weight: 500;
+  line-height: 44rpx;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.download-photo-detail {
+  margin-top: 16rpx;
+  color: #8a8e96;
+  font-size: 26rpx;
+  line-height: 40rpx;
+}
+
+.download-photo-meta {
+  margin-top: 12rpx;
+  color: #8a8e96;
+  font-size: 24rpx;
+  line-height: 36rpx;
+}
+
+.download-method-list {
+  display: flex;
+  flex-direction: column;
+  gap: 20rpx;
+}
+
+.download-method-item {
+  display: flex;
+  align-items: center;
+  min-height: 112rpx;
+  padding: 20rpx 28rpx;
+  border: 2rpx solid transparent;
+  border-radius: 16rpx;
+  background: #f5f6f8;
+}
+
+.download-method-item.active {
+  border-color: #3d68ed;
+  background: #f0f4ff;
+}
+
+.download-method-radio {
+  width: 34rpx;
+  height: 34rpx;
+  margin-right: 20rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 2rpx solid #aaa;
+  border-radius: 50%;
+}
+
+.download-method-item.active .download-method-radio {
+  border-color: #3d68ed;
+}
+
+.download-method-radio-dot {
+  width: 18rpx;
+  height: 18rpx;
+  border-radius: 50%;
+  background: #3d68ed;
+}
+
+.download-method-name {
+  flex: 1;
+  color: #30343b;
+  font-size: 28rpx;
+  font-weight: 400;
+  line-height: 42rpx;
+}
+
+.download-method-price {
+  flex-shrink: 0;
+  margin-left: 16rpx;
+  color: #3d68ed;
+  font-size: 26rpx;
+  font-weight: 500;
+  line-height: 40rpx;
+}
+
+.download-drawer-actions {
+  display: flex;
+  gap: 20rpx;
+  margin-top: auto;
+  padding-top: 40rpx;
+}
+
+.download-drawer-button {
+  flex: 1;
+  height: 88rpx;
+  margin: 0;
+  border-radius: 44rpx;
+  font-size: 30rpx;
+  font-weight: 400;
+  line-height: 88rpx;
+}
+
+.download-drawer-button.cancel {
+  border: 1rpx solid #3d68ed;
+  background: #fff;
+  color: #3d68ed;
+}
+
+.download-drawer-button.confirm {
+  background: #3d68ed;
+  color: #fff;
+}
+
+.download-drawer-button:active {
+  opacity: 0.82;
+}
+
+@keyframes downloadDrawerFadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes downloadDrawerUp {
+  from {
+    transform: translateY(100%);
+  }
+  to {
+    transform: translateY(0);
+  }
+}
+
+@keyframes downloadDrawerFadeOut {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+
+@keyframes downloadDrawerDown {
+  from {
+    transform: translateY(0);
+  }
+  to {
+    transform: translateY(100%);
+  }
+}

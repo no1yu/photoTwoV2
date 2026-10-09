@@ -1,0 +1,58 @@
+.page-header {
+  width: 100%;
+  color: #fff;
+}
+
+.page-header.light {
+  background: #fff;
+  color: #30343b;
+}
+
+.page-header.light .navigation-title.left-title {
+  font-size: 38rpx;
+}
+
+.navigation {
+  position: relative;
+  display: flex;
+  align-items: center;
+  padding-left: 30rpx;
+}
+
+.navigation-title {
+  overflow: hidden;
+  font-size: 34rpx;
+  font-weight: 400;
+  line-height: 1.4;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.navigation-title.left-title {
+  font-weight: 600;
+}
+
+.navigation-title.center-title {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  text-align: center;
+}
+
+.back-button {
+  position: absolute;
+  left: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+}
+
+.back-arrow {
+  width: 20rpx;
+  height: 20rpx;
+  border-bottom: 3rpx solid currentColor;
+  border-left: 3rpx solid currentColor;
+  transform: rotate(45deg);
+}

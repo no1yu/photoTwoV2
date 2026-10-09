@@ -1,0 +1,7 @@
+{
+  "navigationBarTitleText": "规格详情",
+  "navigationStyle": "custom",
+  "usingComponents": {
+    "page-header": "/components/page-header/index"
+  }
+}

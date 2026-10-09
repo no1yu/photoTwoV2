@@ -1,0 +1,92 @@
+.login-page {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  background: #3D68ED;
+}
+
+.login-hero {
+  display: flex;
+  flex-shrink: 0;
+  justify-content: center;
+  align-items: flex-end;
+  height: 344rpx;
+  padding-top: 8rpx;
+}
+
+.login-illustration {
+  width: 320rpx;
+  height: 320rpx;
+  transform: translateY(16rpx);
+}
+
+.login-content {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex: 1;
+  justify-content: center;
+  margin-top: 0;
+  padding: 56rpx 56rpx calc(48rpx + env(safe-area-inset-bottom));
+  border-radius: 32rpx 32rpx 0 0;
+  background: #fff;
+}
+
+.login-panel {
+  width: 100%;
+  max-width: 640rpx;
+}
+
+.login-brand {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.brand-title {
+  display: block;
+  width: 100%;
+  color: #30343B;
+  font-size: 48rpx;
+  font-weight: 600;
+  line-height: 1.4;
+}
+
+.brand-desc {
+  margin-top: 16rpx;
+  color: #8A8E96;
+  font-size: 26rpx;
+  line-height: 1.5;
+}
+
+.login-actions {
+  margin-top: 48rpx;
+}
+
+.login-button {
+  width: 100%;
+  margin: 0;
+  height: 88rpx;
+  border-radius: 44rpx;
+  font-size: 30rpx;
+  font-weight: 400;
+  line-height: 88rpx;
+}
+
+.cancel-button {
+  width: 100%;
+  height: 72rpx;
+  margin: 12rpx 0 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  color: #8A8E96;
+  font-size: 28rpx;
+  font-weight: 400;
+  line-height: 72rpx;
+}
+
+.cancel-button:active {
+  color: #3D68ED;
+}

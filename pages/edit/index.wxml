@@ -1,0 +1,188 @@
+<view class="container page-shell {{active == '3' ? 'params-state' : ''}}">
+  <page-header title="{{photoName}}" back="{{true}}" light="{{true}}" /> 
+  <view class="photo-edit-content" wx:if="{{imageReady}}">
+    <view class="photo-type-switch">
+      <view class="photo-type-item {{photoType == 1 ? 'active' : ''}}" data-type="1" bindtap="switchPhotoType">标准照</view>
+      <view class="photo-type-item {{photoType == 2 ? 'active' : ''}}" data-type="2" bindtap="switchPhotoType">高清照</view>
+    </view>
+
+    <view class="photo-stage" style="min-height: {{height}}px">
+      <view class="canvas-view" style="background-color:{{bgc}}; width: {{width}}px; height: {{height}}px">
+        <!-- 页面始终显示水印，后端下载仍返回无水印原图 -->
+        <image class="nowx_mask" src="../../images/wmark2.png" mode="scaleToFill"></image>
+        <image class="people-photo" src="{{imageData.previewUrl}}" mode="aspectFit"></image>
+      </view>
+    </view>
+  </view>
+  <view class="photo-loading" wx:else>图片加载中...</view>
+  
+  <view class="imgOpt">
+    <van-tabs active="{{active}}" bind:click="clickTab" color="#3d68ed" custom-class="edit-tabs">
+      <van-tab title="背景" name="1">
+        <view class="colors">
+          <view bindtap="toggleBg" data-color="#ffffff" class="color" style="background-color:#ffffff">
+            <view wx:if="{{colorType == 2 && color == '#ffffff'}}" class="icon_select white-select"></view>
+          </view>
+          <view bindtap="toggleBg" data-color="#438edb" class="color" style="background-color:#438edb">
+            <view wx:if="{{colorType == 2 && color == '#438edb'}}" class="icon_select"></view>
+          </view>
+          <view bindtap="toggleBg" data-color="#ff0000" class="color" style="background-color:#ff0000">
+            <view wx:if="{{colorType == 2 && color == '#ff0000'}}" class="icon_select"></view>
+          </view>
+          <view bindtap="toggleBg" data-color="#66b5f2" class="color" style="background-color:#66b5f2">
+            <view wx:if="{{colorType == 2 && color == '#66b5f2'}}" class="icon_select"></view>
+          </view>
+          <view bindtap="toggleBg" data-color="#07c160" class="color" style="background-color:#07c160">
+            <view wx:if="{{colorType == 2 && color == '#07c160'}}" class="icon_select"></view>
+          </view>
+          <view bindtap="toggleBg" data-color="#ffc300" class="color" style="background-color:#ffc300">
+            <view wx:if="{{colorType == 2 && color == '#ffc300'}}" class="icon_select"></view>
+          </view>
+          <view bindtap="toPick" data-color="custom" class="color custom">
+            <view class="custom-bg">自定义</view>
+          </view>
+        </view>
+      </van-tab>
+
+      <van-tab wx:if="{{clothesEnabled}}" title="换装" name="2">
+        <view class="clothes-panel">
+          <view class="clothes-categories">
+            <view class="clothes-category {{clothesBrowseCategory == 1 ? 'active' : ''}}" data-category="1" bindtap="selectClothesCategory">男装</view>
+            <view class="clothes-category {{clothesBrowseCategory == 2 ? 'active' : ''}}" data-category="2" bindtap="selectClothesCategory">女装</view>
+            <view class="clothes-category {{clothesBrowseCategory == 3 ? 'active' : ''}}" data-category="3" bindtap="selectClothesCategory">儿童装</view>
+          </view>
+
+          <scroll-view class="clothes-scroll" scroll-x enhanced show-scrollbar="false">
+            <view class="clothes-list">
+              <view class="clothes-item clothes-cancel {{clothesCategory == 0 ? 'active' : ''}}" bindtap="cancelClothes">
+                <text>取消换装</text>
+              </view>
+              <view
+                wx:for="{{clothesList}}"
+                wx:key="id"
+                class="clothes-item {{clothesId == item.clothesId && clothesCategory == item.category ? 'active' : ''}}"
+                data-category="{{item.category}}"
+                data-id="{{item.clothesId}}"
+                bindtap="selectClothes"
+              >
+                <image src="{{item.imageUrl}}" mode="widthFix"></image>
+              </view>
+            </view>
+          </scroll-view>
+        </view>
+      </van-tab>
+      
+      <van-tab title="高级参数" name="3">
+        <van-notice-bar
+          scrollable="{{ false }}"
+          color="#3d68ed"
+          background="#edf2ff"
+          text="KB填0代表不限制文件大小"
+        />
+        <view class="advanced-params">
+          <view class="params-wrapper">
+            <view class="left-params">
+              <view class="param-item">
+                <text class="param-label">文件大小</text>
+                <input
+                  class="param-input"
+                  type="number"
+                  value="{{kb}}"
+                  disabled="{{updating || switching || saving}}"
+                  bindinput="onKbInput"
+                />
+                <text class="param-unit">KB</text>
+              </view>
+
+              <view class="param-item">
+                <text class="param-label">分辨率</text>
+                <input
+                  class="param-input"
+                  type="number"
+                  value="{{dpi}}"
+                  disabled="{{updating || switching || saving}}"
+                  bindinput="onDpiInput"
+                />
+                <text class="param-unit">DPI</text>
+              </view>
+            </view>
+            
+            <view class="right-params">
+              <view class="param-item render-param-item">
+                <text class="param-label">渲染模式</text>
+                <radio-group bindchange="onRenderChange" class="render-radio-group">
+                  <label class="radio-label">
+                    <radio color="#3d68ed" value="0" checked="{{render == 0}}" disabled="{{updating || switching || saving}}"/> 仅换背景色
+                  </label>
+                  <label class="radio-label">
+                    <radio color="#3d68ed" value="1" checked="{{render == 1}}" disabled="{{updating || switching || saving}}"/> 上下渐变效果
+                  </label>
+                  <label class="radio-label">
+                    <radio color="#3d68ed" value="2" checked="{{render == 2}}" disabled="{{updating || switching || saving}}"/> 中心渐变效果
+                  </label>
+                </radio-group>
+              </view>
+            </view>
+          </view>
+        </view>
+      </van-tab>
+    </van-tabs>
+
+  </view>
+
+  <view class="download-view">
+
+    <view wx:if="{{ active == '1' || active == '2' }}" class="button-group">
+      <button bindtap="openSavePhoto" disabled="{{updating || switching || saving}}" type="default" class="save-btn single-btn">{{saving ? '保存中...' : '保存照片'}}</button>
+    </view>
+
+    <view wx:elif="{{ active == '3' }}" class="button-group">
+      <button bindtap="saveParams" disabled="{{updating || switching || saving}}" type="default" class="save-btn single-btn">{{updating ? '保存中...' : '保存修改'}}</button>
+    </view>
+  </view>
+
+  <color-picker wx:if="{{pick}}" bindchangeColor="pickColor" bindclose="hideColorPicker" initColor="{{colorPickerInit}}" show="{{pick}}" />
+
+  <view wx:if="{{switching}}" class="photo-making-mask" catchtap="noop" catchtouchmove="noop">
+    <view class="photo-making-panel">
+      <view class="photo-making-spinner"></view>
+      <text class="photo-making-text">正在制作中，请稍候...</text>
+    </view>
+  </view>
+
+  <view wx:if="{{downloadDrawerVisible}}" class="download-drawer-mask {{downloadDrawerClosing ? 'closing' : ''}}" catchtap="closeDownloadDrawer" catchtouchmove="noop">
+    <view class="download-drawer-panel" catchtap="noop">
+      <view class="download-drawer-header">
+        <text class="download-drawer-title">下载方式</text>
+        <text class="download-drawer-close" catchtap="closeDownloadDrawer">×</text>
+      </view>
+      <view class="download-photo-summary">
+        <image class="download-photo-thumbnail" src="{{imageData.previewUrl}}" mode="aspectFill"></image>
+        <view class="download-photo-info">
+          <text class="download-photo-name">{{photoName}}</text>
+          <text class="download-photo-detail">高清无水印证件照</text>
+          <text class="download-photo-meta">{{downloadPhotoMeta}}</text>
+        </view>
+      </view>
+      <view class="download-method-list">
+        <view
+          wx:for="{{downloadOptions}}"
+          wx:key="method"
+          class="download-method-item {{selectedDownloadMethod === item.method ? 'active' : ''}}"
+          data-method="{{item.method}}"
+          bindtap="selectDownloadMethod"
+        >
+          <view class="download-method-radio">
+            <view wx:if="{{selectedDownloadMethod === item.method}}" class="download-method-radio-dot"></view>
+          </view>
+          <text class="download-method-name">{{item.name}}</text>
+          <text wx:if="{{item.price}}" class="download-method-price">{{item.price}}</text>
+        </view>
+      </view>
+      <view class="download-drawer-actions">
+        <button class="download-drawer-button cancel" bindtap="closeDownloadDrawer">取消</button>
+        <button class="download-drawer-button confirm" bindtap="confirmDownloadMethod">确定</button>
+      </view>
+    </view>
+  </view>
+</view>

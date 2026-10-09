@@ -1,0 +1,8 @@
+<view class="page-header {{light ? 'light' : ''}}" style="padding-top: {{statusBarHeight}}px">
+  <view class="navigation" style="height: {{navigationHeight}}px; padding-right: {{menuWidth}}px">
+    <view wx:if="{{back}}" class="back-button" bindtap="navigateBack">
+      <view class="back-arrow"></view>
+    </view>
+    <text class="navigation-title {{left ? 'left-title' : 'center-title'}}" style="max-width: calc(100% - {{left ? 0 : menuWidth * 2}}px)">{{title}}</text>
+  </view>
+</view>

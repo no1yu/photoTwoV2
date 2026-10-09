@@ -1,0 +1,58 @@
+<view class="page-shell explore-page">
+  <page-header title="探索中心" light="{{true}}" />
+
+  <view class="explore-content">
+    <view class="list-status" wx:if="{{loading && !applications.length}}">加载中...</view>
+    <view class="empty-state" wx:elif="{{!applications.length}}">暂无可用功能</view>
+
+    <view class="featured-grid" wx:if="{{applications.length}}">
+      <block wx:for="{{applications}}" wx:for-index="index" wx:key="id">
+        <view wx:if="{{index == 0}}" class="featured-card" bindtap="navigateTo" data-app-id="{{item.id}}" data-title="{{item.name}}">
+          <view class="featured-content">
+            <text class="featured-title">{{item.name}}</text>
+            <text class="featured-desc">{{item.description}}</text>
+          </view>
+          <view class="featured-image-area">
+            <image class="featured-image" mode="aspectFit" src="{{item.image}}"></image>
+          </view>
+        </view>
+      </block>
+      <view class="quick-services">
+        <block wx:for="{{applications}}" wx:for-index="index" wx:key="id">
+          <view wx:if="{{index == 1 || index == 2}}" class="service-card quick-service" bindtap="navigateTo" data-app-id="{{item.id}}" data-title="{{item.name}}">
+            <text class="service-title">{{item.name}}</text>
+            <view class="service-body">
+              <text class="service-desc">{{item.description}}</text>
+              <view class="service-icon">
+                <view wx:if="{{applicationIcons[item.id] === 'hd'}}" class="service-hd-icon">HD</view>
+                <van-icon wx:else name="{{applicationIcons[item.id]}}" size="64rpx" color="#30343B" />
+              </view>
+            </view>
+          </view>
+        </block>
+      </view>
+    </view>
+
+    <view class="service-list" wx:if="{{applications.length > 3}}">
+      <view
+        wx:for="{{applications}}"
+        wx:for-index="index"
+        wx:key="id"
+        wx:if="{{index > 2}}"
+        class="service-card"
+        bindtap="navigateTo"
+        data-app-id="{{item.id}}"
+        data-title="{{item.name}}"
+      >
+        <text class="service-title">{{item.name}}</text>
+        <view class="service-body">
+          <text class="service-desc">{{item.description}}</text>
+          <view class="service-icon">
+            <view wx:if="{{applicationIcons[item.id] === 'hd'}}" class="service-hd-icon">HD</view>
+            <van-icon wx:else name="{{applicationIcons[item.id]}}" size="64rpx" color="#30343B" />
+          </view>
+        </view>
+      </view>
+    </view>
+  </view>
+</view>

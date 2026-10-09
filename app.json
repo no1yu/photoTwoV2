@@ -1,0 +1,152 @@
+{
+  "pages": [
+    "pages/home/index",
+    "pages/sizeList/index",
+    "pages/explore/index",
+    "pages/mine/index",
+    "pages/login/index"
+  ],
+  "subPackages": [
+    {
+      "root": "pages/searchs",
+      "name": "searchPkg",
+      "pages": [
+        "index"
+      ]
+    },
+    {
+      "root": "pages/custom",
+      "name": "customPkg",
+      "pages": [
+        "index"
+      ]
+    },
+    {
+      "root": "pages/preEdit",
+      "name": "preEditPkg",
+      "pages": [
+        "index"
+      ]
+    },
+    {
+      "root": "pages/camera",
+      "name": "cameraPkg",
+      "pages": [
+        "index"
+      ]
+    },
+    {
+      "root": "pages/edit",
+      "name": "editPkg",
+      "pages": [
+        "index"
+      ]
+    },
+    {
+      "root": "pages/exploreHandle",
+      "name": "exploreHandlePkg",
+      "pages": [
+        "index"
+      ]
+    },
+    {
+      "root": "pages/works",
+      "name": "worksPkg",
+      "pages": [
+        "index"
+      ]
+    },
+    {
+      "root": "pages/admin",
+      "name": "adminPkg",
+      "pages": [
+        "index"
+      ]
+    },
+    {
+      "root": "pages/feedback",
+      "name": "feedbackPkg",
+      "pages": [
+        "index"
+      ]
+    }
+  ],
+  "preloadRule": {
+    "pages/home/index": {
+      "network": "all",
+      "packages": [
+        "searchPkg",
+        "preEditPkg"
+      ]
+    },
+    "pages/explore/index": {
+      "network": "all",
+      "packages": [
+        "exploreHandlePkg"
+      ]
+    },
+    "pages/mine/index": {
+      "network": "all",
+      "packages": [
+        "worksPkg"
+      ]
+    },
+    "pages/sizeList/index": {
+      "network": "all",
+      "packages": [
+        "preEditPkg"
+      ]
+    },
+    "pages/preEdit/index": {
+      "network": "all",
+      "packages": [
+        "cameraPkg",
+        "editPkg"
+      ]
+    }
+  },
+  "window": {
+    "backgroundColor": "#F5F6F8",
+    "backgroundTextStyle": "light",
+    "navigationBarBackgroundColor": "#FFFFFF",
+    "navigationBarTitleText": "Photo",
+    "navigationBarTextStyle": "black",
+    "navigationStyle": "custom"
+  },
+  "sitemapLocation": "sitemap.json",
+  "lazyCodeLoading": "requiredComponents",
+  "usingComponents": {},
+  "tabBar": {
+    "custom": true,
+    "color": "#8A92A6",
+    "selectedColor": "#3D68ED",
+    "backgroundColor": "#FFFFFF",
+    "borderStyle": "white",
+    "list": [
+      {
+        "pagePath": "pages/home/index",
+        "text": "首页",
+        "iconPath": "images/tabs/home.png",
+        "selectedIconPath": "images/tabs/home_cur.png"
+      },
+      {
+        "pagePath": "pages/sizeList/index",
+        "text": "规格",
+        "iconPath": "images/tabs/size.png",
+        "selectedIconPath": "images/tabs/size_cur.png"
+      },
+      {
+        "pagePath": "pages/explore/index",
+        "text": "探索",
+        "iconPath": "images/tabs/explore.png",
+        "selectedIconPath": "images/tabs/explore_cur.png"
+      },
+      {
+        "pagePath": "pages/mine/index",
+        "text": "我的",
+        "iconPath": "images/tabs/mine.png",
+        "selectedIconPath": "images/tabs/mine_cur.png"
+      }
+    ]
+  }
+}

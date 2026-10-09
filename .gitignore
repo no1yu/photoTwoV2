@@ -1,0 +1,16 @@
+# IntelliJ IDEA
+.idea/
+*.iml
+*.ipr
+*.iws
+out/
+
+# HBuilderX
+.hbuilderx/
+unpackage/
+
+# WeChat Developer Tools
+project.private.config.json
+
+# Node.js
+node_modules/
