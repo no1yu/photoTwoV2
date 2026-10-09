@@ -16,6 +16,7 @@
 ------
 
 # ⭐最近更新
+    版本更新教程：https://www.bilibili.com/video/BV1GRpw69Evj
 
 - 2026.10.09：诞生
 
